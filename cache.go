@@ -79,7 +79,10 @@ func (c *Cache) save() error {
 	}
 	sysLock.Lock()
 	err = ioutil.WriteFile(c.JsonFile, jsonData, 0600)
-	log.Println("write file error", c.JsonFile, err)
 	sysLock.Unlock()
+	if err != nil {
+		log.Println("write file error", c.JsonFile, err)
+	}
+
 	return nil
 }
