@@ -17,8 +17,6 @@ type Message struct {
 	File     map[string]string `json:"file"`
 }
 
-var messageCache Cache = Cache{jsonFile: fmt.Sprintf("%v/cache.db.json", *logPath)}
-
 //处理构建进度消息
 func sendMessage(hub *Hub) func(http.ResponseWriter, *http.Request) {
 	messageCache.init()

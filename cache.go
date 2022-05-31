@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"sync"
 )
 
@@ -18,7 +19,7 @@ const CACHE_SIZE int32 = 300
 type Cache struct {
 	List     [CACHE_SIZE]CacheFile
 	Index    int32
-	jsonFile string
+	JsonFile string
 }
 
 //添加消息
@@ -54,7 +55,7 @@ func (c *Cache) getFiles(size int32) ([]CacheFile, error) {
 
 //初始化，从jons文件中加载消息
 func (c *Cache) init() error {
-	jsonData, err := ioutil.ReadFile(c.jsonFile)
+	jsonData, err := ioutil.ReadFile(c.JsonFile)
 	if err != nil {
 		return nil
 	}
@@ -77,7 +78,8 @@ func (c *Cache) save() error {
 		return err
 	}
 	sysLock.Lock()
-	ioutil.WriteFile(c.jsonFile, jsonData, 0600)
+	err = ioutil.WriteFile(c.JsonFile, jsonData, 0600)
+	log.Println("write file error", c.JsonFile, err)
 	sysLock.Unlock()
 	return nil
 }

@@ -13,11 +13,12 @@ import (
 )
 
 var addr = flag.String("addr", ":8082", "http service address")
-var logPath = flag.String("logPath", "/tmp/logs", "path save buil log file on")
+var logPath = flag.String("logPath", "/tmp/rr", "path save buil log file on")
 var (
 	gitHash   string
 	buildTime string
 )
+var messageCache Cache = Cache{}
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
 	log.Println(r.URL)
@@ -50,6 +51,9 @@ func main() {
 		log.Printf("%v path error", *logPath)
 		return
 	}
+
+	messageCache.JsonFile = fmt.Sprintf("%v/cache.db.json", *logPath)
+
 	hub := newHub()
 	go hub.run()
 	http.HandleFunc("/", serveHome)
