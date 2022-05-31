@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"os"
 	"sync"
 )
 
@@ -71,10 +70,8 @@ func (c *Cache) init() error {
 
 var sysLock sync.Mutex
 
+// 将信息写到文件
 func (c *Cache) save() error {
-	if _, err := os.Stat(c.jsonFile); err != nil {
-		return err
-	}
 	jsonData, err := json.Marshal(c)
 	if err != nil {
 		return err

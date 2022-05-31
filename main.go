@@ -6,13 +6,18 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 )
 
 var addr = flag.String("addr", ":8082", "http service address")
-
-const LOG_PATH string = "/tmp/logs"
+var logPath = flag.String("logPath", "/tmp/logs", "path save buil log file on")
+var (
+	gitHash   string
+	buildTime string
+)
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
 	log.Println(r.URL)
@@ -34,6 +39,13 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	flag.Parse()
+	log.Println("gitHash : ", gitHash)
+	log.Println("buildTime : ", buildTime)
+	_, err := os.Stat(fmt.Sprintf("%v", *logPath))
+	if err != nil {
+		log.Printf("%v path error", *logPath)
+		return
+	}
 	hub := newHub()
 	go hub.run()
 	http.HandleFunc("/", serveHome)
@@ -44,7 +56,7 @@ func main() {
 		serveWs(hub, w, r)
 	})
 
-	err := http.ListenAndServe(*addr, nil)
+	err = http.ListenAndServe(*addr, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}

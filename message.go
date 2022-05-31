@@ -12,14 +12,12 @@ import (
 	"github.com/gomarkdown/markdown"
 )
 
-const TMP string = "/tmp/logs"
-
 type Message struct {
 	Markdown map[string]string `json:"markdown"`
 	File     map[string]string `json:"file"`
 }
 
-var messageCache Cache = Cache{jsonFile: fmt.Sprintf("%v/cache.db.json", TMP)}
+var messageCache Cache = Cache{jsonFile: fmt.Sprintf("%v/cache.db.json", *logPath)}
 
 //处理构建进度消息
 func sendMessage(hub *Hub) func(http.ResponseWriter, *http.Request) {
@@ -56,7 +54,7 @@ func sendMessage(hub *Hub) func(http.ResponseWriter, *http.Request) {
 func uploadMedia(w http.ResponseWriter, r *http.Request) {
 	file, header, err := r.FormFile("file")
 	b, _ := ioutil.ReadAll(file)
-	fileName := fmt.Sprintf("%v/%v", TMP, header.Filename)
+	fileName := fmt.Sprintf("%v/%v", *logPath, header.Filename)
 	fileErr := ioutil.WriteFile(fileName, b, 0600)
 	log.Println(fileName, len(b), err, fileErr)
 	res := map[string]string{
@@ -67,7 +65,7 @@ func uploadMedia(w http.ResponseWriter, r *http.Request) {
 
 // 返回日志文件
 func logFile(w http.ResponseWriter, r *http.Request) error {
-	fileName := fmt.Sprintf("%v%v", TMP, r.URL)
+	fileName := fmt.Sprintf("%v%v", *logPath, r.URL)
 	reg, _ := regexp.Compile(".log$")
 	if !reg.Match([]byte(fileName)) {
 		return fmt.Errorf("not log file")
