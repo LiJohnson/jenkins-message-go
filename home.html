@@ -7,6 +7,132 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0"
     />
+    <link
+      id="icon"
+      rel="icon"
+      type="image/png"
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f55f.png?v8"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f55b.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f567.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f550.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f55c.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f551.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f55d.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f552.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f55e.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f553.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f55f.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f554.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f560.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f555.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f561.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f556.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f562.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f557.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f563.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f558.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f564.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f559.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f565.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f55a.png?v8"
+      rel="prefetch"
+      as="image"
+    />
+    <link
+      href="https://github.githubassets.com/images/icons/emoji/unicode/1f566.png?v8"
+      rel="prefetch"
+      as="image"
+    />
     <title>build log</title>
     <script type="text/javascript">
       let $ = (s) => document.querySelector(s);
@@ -15,7 +141,7 @@
       }
       let retry = 0;
       let loadRecentLogs = true;
-      let lockNotify = false
+      let lockNotify = false;
       let connect = () => {
         retry++;
         $("#status").innerHTML = "🌦";
@@ -48,10 +174,10 @@
           if (loadRecentLogs) {
             conn.send("recentLogs");
             loadRecentLogs = false;
-            lockNotify = true
-            setTimeout(()=>{
-              lockNotify = false
-            },5000)
+            lockNotify = true;
+            setTimeout(() => {
+              lockNotify = false;
+            }, 5000);
           }
         };
       };
@@ -69,7 +195,8 @@
         }
         timeId && clearTimeout(timeId);
         timeId = setTimeout(() => {
-          console.log(new Notification(title, { body }));
+          rockIcon()
+          new Notification(title, { body })
         }, 1000);
       };
       window.onload = () => {
@@ -82,6 +209,51 @@
         }
         window.Notification &&
           Notification.requestPermission().then((a) => console.log(a));
+      };
+    </script>
+    <script>
+      let pngList = [
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f55b.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f567.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f550.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f55c.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f551.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f55d.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f552.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f55e.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f553.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f55f.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f554.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f560.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f555.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f561.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f556.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f562.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f557.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f563.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f558.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f564.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f559.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f565.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f55a.png?v8",
+        "https://github.githubassets.com/images/icons/emoji/unicode/1f566.png?v8",
+      ];
+      let getIndex = () => {
+        let now = new Date();
+        let index = (now.getHours() % 12) * 2;
+        return (index = index + (now.getMinutes() < 30 ? 0 : 1));
+      };
+      let icon = document.querySelector("#icon");
+
+      icon.href = pngList[getIndex()] || pngList[0];
+      let sleep = (s) => new Promise((ok) => setTimeout(ok, s));
+      window.rockIcon = async () => {
+        let index = getIndex()
+        for (let i = 0; i < pngList.length; i += 2) {
+          icon.href = pngList[(index + i) % pngList.length];
+          await sleep(50);
+        }
+        icon.href = pngList[index] || pngList[0];
       };
     </script>
     <style type="text/css">
@@ -124,7 +296,7 @@
       }
       a {
         color: #0d6efd;
-        text-decoration: underline;
+        text-decoration: none;
       }
       a:hover {
         color: #0a58ca;
@@ -160,7 +332,9 @@
   <body>
     <div id="bar">
       <span id="status"></span>
-      [清屏] [通知]
+      <span>
+        <a href="javascript:void( document.querySelector('#log').innerHTML='' )">[清屏]</a>
+      </span>
     </div>
     <div id="log"></div>
   </body>
