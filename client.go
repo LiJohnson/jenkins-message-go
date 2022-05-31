@@ -72,7 +72,33 @@ func (c *Client) readPump() {
 			break
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		c.hub.broadcast <- message
+		// c.hub.broadcast <- message
+		if string(message) == "recentLogs" {
+			msgList, err := messageCache.getFiles(100)
+			if err != nil {
+				return
+			}
+
+			for _, msg := range msgList {
+				w, err := c.conn.NextWriter(websocket.TextMessage)
+				if err != nil {
+					return
+				}
+				w.Write(msg.Content)
+
+				n := len(c.send)
+				for i := 0; i < n; i++ {
+					w.Write(newline)
+					w.Write(<-c.send)
+				}
+
+				if err := w.Close(); err != nil {
+					return
+				}
+
+			}
+
+		}
 	}
 }
 

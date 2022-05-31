@@ -4,6 +4,8 @@
 
 package main
 
+import "time"
+
 // Hub maintains the set of active clients and broadcasts messages to the
 // clients.
 type Hub struct {
@@ -33,6 +35,7 @@ func (h *Hub) run() {
 	for {
 		select {
 		case client := <-h.register:
+			client.CreateAt = time.Now()
 			h.clients[client] = true
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
