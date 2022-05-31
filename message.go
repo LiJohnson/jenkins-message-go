@@ -38,7 +38,7 @@ func sendMessage(hub *Hub) func(http.ResponseWriter, *http.Request) {
 			fmt.Println(r)
 			return
 		}
-		urlReg, _ := regexp.Compile(`\(?http[\w:\?\.\=\#%&/]+\)?`)
+		urlReg, _ := regexp.Compile(`\(?http[\w:\?\.\-\=\#%&/]+\)?`)
 		content = urlReg.ReplaceAllString(content, "")
 
 		byteContent := []byte(content)

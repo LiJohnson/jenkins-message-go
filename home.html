@@ -15,6 +15,7 @@
       }
       let retry = 0;
       let loadRecentLogs = true;
+      let lockNotify = false
       let connect = () => {
         retry++;
         $("#status").innerHTML = "🌦";
@@ -38,15 +39,38 @@
           item.querySelectorAll("a").forEach((a) => {
             a.target = "_blank";
           });
-
+          !lockNotify && notify(item);
           appendLog(item);
         };
         conn.onopen = () => {
           $("#status").innerHTML = "☀️";
           retry = 1;
-          loadRecentLogs && conn.send("recentLogs");
-          loadRecentLogs = false;
+          if (loadRecentLogs) {
+            conn.send("recentLogs");
+            loadRecentLogs = false;
+            lockNotify = true
+            setTimeout(()=>{
+              lockNotify = false
+            },5000)
+          }
         };
+      };
+
+      let timeId = 0;
+      let notify = async (htmlEl) => {
+        let title = htmlEl.querySelector("h2");
+        let body = htmlEl.innerText;
+        if (title) {
+          title = title.innerText;
+          body = body.replace(title, "");
+        } else {
+          title = body;
+          body = "";
+        }
+        timeId && clearTimeout(timeId);
+        timeId = setTimeout(() => {
+          console.log(new Notification(title, { body }));
+        }, 1000);
       };
       window.onload = () => {
         if (window["WebSocket"]) {
@@ -56,6 +80,8 @@
           item.innerHTML = "<b>Your browser does not support </b>";
           appendLog(item);
         }
+        window.Notification &&
+          Notification.requestPermission().then((a) => console.log(a));
       };
     </script>
     <style type="text/css">
@@ -134,6 +160,7 @@
   <body>
     <div id="bar">
       <span id="status"></span>
+      [清屏] [通知]
     </div>
     <div id="log"></div>
   </body>
