@@ -4,7 +4,10 @@
 
 package main
 
-import "time"
+import (
+	"log"
+	"time"
+)
 
 // Hub maintains the set of active clients and broadcasts messages to the
 // clients.
@@ -52,5 +55,6 @@ func (h *Hub) run() {
 				}
 			}
 		}
+		log.Println("clients size ", len(h.clients))
 	}
 }

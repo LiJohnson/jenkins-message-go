@@ -39,8 +39,12 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	flag.Parse()
+
 	log.Println("gitHash : ", gitHash)
 	log.Println("buildTime : ", buildTime)
+	log.Println("logPath : ", *logPath)
+	log.Println("addr : ", *addr)
+
 	_, err := os.Stat(fmt.Sprintf("%v", *logPath))
 	if err != nil {
 		log.Printf("%v path error", *logPath)
