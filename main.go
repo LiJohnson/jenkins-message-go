@@ -8,6 +8,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 )
@@ -17,6 +18,7 @@ var logPath = flag.String("logPath", "/tmp/logs", "path save buil log file on")
 var (
 	gitHash   string
 	buildTime string
+	runMac    string
 )
 var messageCache Cache = Cache{}
 
@@ -40,6 +42,11 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	flag.Parse()
+
+	if err := checkMac(); err != nil {
+		log.Println(err)
+		return
+	}
 
 	log.Println("gitHash : ", gitHash)
 	log.Println("buildTime : ", buildTime)
@@ -68,4 +75,35 @@ func main() {
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
+}
+
+//校验mac地址
+func checkMac() error {
+	if len(runMac) == 0 {
+		return nil
+	}
+	for _, mac := range getMacAddrs() {
+		if mac == runMac {
+			return nil
+		}
+	}
+	return fmt.Errorf("run time error")
+}
+
+func getMacAddrs() (macAddrs []string) {
+	netInterfaces, err := net.Interfaces()
+	if err != nil {
+		fmt.Printf("fail to get net interfaces: %v", err)
+		return macAddrs
+	}
+	// fmt.Println(netInterfaces)
+	for _, netInterface := range netInterfaces {
+		macAddr := netInterface.HardwareAddr.String()
+
+		if len(macAddr) == 0 {
+			continue
+		}
+		macAddrs = append(macAddrs, macAddr)
+	}
+	return
 }
