@@ -13,7 +13,7 @@ import (
 )
 
 var addr = flag.String("addr", ":8082", "http service address")
-var logPath = flag.String("logPath", "/tmp/rr", "path save buil log file on")
+var logPath = flag.String("logPath", "/tmp/logs", "path save buil log file on")
 var (
 	gitHash   string
 	buildTime string

@@ -195,8 +195,8 @@
         }
         timeId && clearTimeout(timeId);
         timeId = setTimeout(() => {
-          rockIcon()
-          new Notification(title, { body })
+          rockIcon();
+          new Notification(title, { body });
         }, 1000);
       };
       window.onload = () => {
@@ -208,7 +208,9 @@
           appendLog(item);
         }
         window.Notification &&
-          Notification.requestPermission().then((a) => console.log(a));
+          Notification.requestPermission().then((a) => {
+            $("#notice").innerText = a === "granted" ? "🔔" : "🔕";
+          });
       };
     </script>
     <script>
@@ -248,7 +250,7 @@
       icon.href = pngList[getIndex()] || pngList[0];
       let sleep = (s) => new Promise((ok) => setTimeout(ok, s));
       window.rockIcon = async () => {
-        let index = getIndex()
+        let index = getIndex();
         for (let i = 0; i < pngList.length; i += 2) {
           icon.href = pngList[(index + i) % pngList.length];
           await sleep(50);
@@ -322,20 +324,27 @@
       }
     </style>
     <style>
-      #status {
+      #status-bar {
         position: fixed;
         right: 3px;
         bottom: 3px;
+        writing-mode: tb-rl;
+        cursor: default;
       }
     </style>
   </head>
   <body>
     <div id="bar">
-      <span id="status"></span>
       <span>
-        <a href="javascript:void( document.querySelector('#log').innerHTML='' )">[清屏]</a>
+        <a href="javascript:void(document.querySelector('#log').innerHTML='')">
+          [清屏]
+        </a>
       </span>
     </div>
     <div id="log"></div>
+    <div id="status-bar">
+      <span id="notice"></span>
+      <span id="status"></span>
+    </div>
   </body>
 </html>
