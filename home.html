@@ -136,12 +136,13 @@
     <title>build log</title>
     <script type="text/javascript">
       let $ = (s) => document.querySelector(s);
-      function appendLog(item) {
+      let appendLog =(item) =>{
         $("#log").prepend(item);
       }
       let retry = 0;
       let loadRecentLogs = true;
       let lockNotify = false;
+      let noticeStatusCallbank = new Promise(ok=>{})
       let connect = () => {
         retry++;
         $("#status").innerHTML = "🌦";
@@ -156,8 +157,8 @@
         };
         conn.onmessage = (evt) => {
           let item = document.createElement("div");
-          item.innerHTML = evt.data.replace(/\[build\(#\d+\)\]/, "");
-          let buildNum = evt.data.match(/\[build\(#\d+\)\]/);
+          item.innerHTML = evt.data.replace(/\[build\(#\d+\)\]\(\)/, "");
+          let buildNum = evt.data.match(/build\(#\d+\)/);
           if (buildNum) {
             buildNum = buildNum[0].match(/#\d+/)[0];
             item.querySelector("h2").append(" " + buildNum);

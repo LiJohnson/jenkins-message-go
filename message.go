@@ -15,6 +15,7 @@ import (
 type Message struct {
 	Markdown map[string]string `json:"markdown"`
 	File     map[string]string `json:"file"`
+	MediaId  string            `json:"media_id"`
 }
 
 //处理构建进度消息
@@ -24,18 +25,22 @@ func sendMessage(hub *Hub) func(http.ResponseWriter, *http.Request) {
 		// r.GetBody()
 		var message Message
 		json.NewDecoder(r.Body).Decode(&message)
+
 		var content string
 		if message.Markdown != nil {
 			content = message.Markdown["content"]
-		} else if message.File != nil {
-			fileName := message.File["media_id"]
-			content = fmt.Sprintf("[%v](%v)", fileName, fileName)
+			log.Printf("content=> %v\n", content)
 		} else {
 			fmt.Println(r)
 			return
 		}
-		urlReg, _ := regexp.Compile(`\(?http[\w:\?\.\-\=\#%&/]+\)?`)
+		urlReg, _ := regexp.Compile(`\n>\s*http[\w:\?\.\-\=\#%&/]+\n?`)
 		content = urlReg.ReplaceAllString(content, "")
+
+		urlReg, _ = regexp.Compile(`http[\w:\?\.\-\=\#%&/]+`)
+		content = urlReg.ReplaceAllString(content, message.MediaId)
+
+		log.Printf("no http content=> %v\n", content)
 
 		byteContent := []byte(content)
 		if len(byteContent) > 1024*10 {
@@ -43,6 +48,7 @@ func sendMessage(hub *Hub) func(http.ResponseWriter, *http.Request) {
 		}
 
 		byteContent = markdown.ToHTML(byteContent, nil, nil)
+		log.Printf("byteContent => %v\n", string(byteContent))
 		hub.broadcast <- byteContent
 		messageCache.addFile("fileName", byteContent)
 	}

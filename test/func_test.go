@@ -3,6 +3,7 @@ package test
 import (
 	"fmt"
 	"net"
+	"regexp"
 	"testing"
 )
 
@@ -39,4 +40,21 @@ func getMacAddrs() (macAddrs []string) {
 		macAddrs = append(macAddrs, macAddr)
 	}
 	return
+}
+
+func Test_regx(t *testing.T) {
+	urlReg, _ := regexp.Compile(`^>\s*http[\w:\?\.\-\=\#%&/]+`)
+
+	var content string = `## 🌧【test2】build FAILURE  
+	> **startAt** sd
+	> **desc** roken since build 
+	> Started by GitLab push by tjy312  
+	> **params**  
+	> testParam : fsdsf
+	> **[build(#164)](http://localhost:8080/jenkins/job/test2/164/console)**  
+> http://localhost:8080/jenkins/job/test2/164/console`
+
+	content = urlReg.ReplaceAllString(content, "")
+	fmt.Println(content)
+
 }
