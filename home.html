@@ -136,13 +136,23 @@
     <title>build log</title>
     <script type="text/javascript">
       let $ = (s) => document.querySelector(s);
-      let appendLog =(item) =>{
+      let sleep = (s) => new Promise((ok) => setTimeout(ok, s));
+      let appendLog = (item) => {
         $("#log").prepend(item);
-      }
+      };
       let retry = 0;
       let loadRecentLogs = true;
       let lockNotify = false;
-      let noticeStatusCallbank = new Promise(ok=>{})
+      let noticeStatusPromise = (() => {
+        let fun = null;
+        let p = new Promise((ok) => {
+          fun = ok;
+        });
+        return {
+          ok: fun,
+          promise: p,
+        };
+      })();
       let connect = () => {
         retry++;
         $("#status").innerHTML = "🌦";
@@ -153,6 +163,8 @@
           $("#status").innerHTML = "🌧";
           if (retry < 5) {
             setTimeout(connect, 3000 * retry);
+          }else{
+            alert("Connection closed. Please try reload")
           }
         };
         conn.onmessage = (evt) => {
@@ -180,6 +192,9 @@
               lockNotify = false;
             }, 5000);
           }
+          noticeStatusPromise.promise.then((result) => {
+            conn.send(`noticeStatus=${result}`);
+          });
         };
       };
 
@@ -208,10 +223,12 @@
           item.innerHTML = "<b>Your browser does not support </b>";
           appendLog(item);
         }
-        window.Notification &&
-          Notification.requestPermission().then((a) => {
-            $("#notice").innerText = a === "granted" ? "🔔" : "🔕";
-          });
+        window.Notification
+          ? Notification.requestPermission().then((a) => {
+              $("#notice").innerText = a === "granted" ? "🔔" : "🔕";
+              noticeStatusPromise.ok(a);
+            })
+          : noticeStatusPromise.ok();
       };
     </script>
     <script>
@@ -249,7 +266,7 @@
       let icon = document.querySelector("#icon");
 
       icon.href = pngList[getIndex()] || pngList[0];
-      let sleep = (s) => new Promise((ok) => setTimeout(ok, s));
+      
       window.rockIcon = async () => {
         let index = getIndex();
         for (let i = 0; i < pngList.length; i += 2) {

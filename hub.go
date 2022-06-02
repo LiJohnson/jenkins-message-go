@@ -55,6 +55,19 @@ func (h *Hub) run() {
 				}
 			}
 		}
-		log.Println("clients size ", len(h.clients))
+
+	}
+}
+
+func (h *Hub) statusLog() {
+	for {
+		time.Sleep(10 * time.Second)
+		log.Println("============================")
+		log.Println(time.Now(), "clients size : ", len(h.clients))
+		for c := range h.clients {
+			log.Printf("%v <==> %v, %v ,%v", c.conn.LocalAddr(), c.conn.RemoteAddr(), c.NoticeStatus, c.CreateAt.Format(time.RFC3339))
+		}
+		log.Println()
+		log.Println()
 	}
 }

@@ -15,6 +15,7 @@ import (
 
 var addr = flag.String("addr", ":8082", "http service address")
 var logPath = flag.String("logPath", "/tmp/logs", "path save buil log file on")
+var maxClient = flag.Int("maxClient", 100, "allow max num client connected")
 var (
 	gitHash   string
 	buildTime string
@@ -63,6 +64,7 @@ func main() {
 
 	hub := newHub()
 	go hub.run()
+	go hub.statusLog()
 	http.HandleFunc("/", serveHome)
 	http.HandleFunc("/sendMessage", sendMessage(hub))
 	http.HandleFunc("/uploadMedia", uploadMedia)

@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -47,7 +48,8 @@ type Client struct {
 	// Buffered channel of outbound messages.
 	send chan []byte
 	// 创建时间
-	CreateAt time.Time
+	CreateAt     time.Time
+	NoticeStatus string
 }
 
 // readPump pumps messages from the websocket connection to the hub.
@@ -73,7 +75,8 @@ func (c *Client) readPump() {
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
 		// c.hub.broadcast <- message
-		if string(message) == "recentLogs" {
+		messageStr := string(message)
+		if messageStr == "recentLogs" {
 			msgList, err := messageCache.getFiles(100)
 			if err != nil {
 				return
@@ -97,7 +100,8 @@ func (c *Client) readPump() {
 				}
 
 			}
-
+		} else if strings.HasPrefix(messageStr, "noticeStatus") {
+			c.NoticeStatus = messageStr
 		}
 	}
 }
@@ -150,11 +154,17 @@ func (c *Client) writePump() {
 
 // serveWs handles websocket requests from the peer.
 func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
+	if len(hub.clients) >= *maxClient {
+		w.WriteHeader(500)
+		log.Println("too many connections ", *maxClient)
+		return
+	}
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
 		return
 	}
+
 	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}
 	client.hub.register <- client
 
