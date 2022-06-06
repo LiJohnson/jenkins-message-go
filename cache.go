@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -50,22 +51,27 @@ func (c *Cache) delFile(ids []int64) (int64, error) {
 	if len(ids) == 0 {
 		return 0, fmt.Errorf("ids not empty")
 	}
-	var count int64
-	for id := range ids {
-		res, err := c.db.Exec("DELETE FROM build_log_message WHERE id = ?", id)
-		if err != nil {
-			log.Println(err)
-			return 0, err
-		}
-		affect, err := res.RowsAffected()
-		if err != nil {
-			log.Println(err)
-			return 0, err
-		}
-		count = count + affect
+	var deleteSql strings.Builder
+	var idData = make([]interface{}, len(ids))
+	deleteSql.WriteString("DELETE FROM build_log_message WHERE id in (?")
+	idData[0] = ids[0]
+	for i := 1; i < len(ids); i++ {
+		deleteSql.WriteString(",?")
+		idData[i] = ids[i]
+	}
+	deleteSql.WriteString(")")
+	res, err := c.db.Exec(deleteSql.String(), idData...)
+	if err != nil {
+		log.Println(err)
+		return 0, err
+	}
+	affect, err := res.RowsAffected()
+	if err != nil {
+		log.Println(err)
+		return 0, err
 	}
 
-	return count, nil
+	return affect, nil
 }
 
 //获取消息
