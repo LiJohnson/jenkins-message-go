@@ -59,7 +59,7 @@ func main() {
 		return
 	}
 
-	messageCache.JsonFile = fmt.Sprintf("%v/cache.db.json", *logPath)
+	messageCache.DBFile = fmt.Sprintf("%v/cache.db", *logPath)
 
 	hub := newHub()
 	go hub.run()

@@ -1,33 +1,42 @@
 package main
 
 import (
-	"encoding/json"
+	"database/sql"
 	"errors"
-	"fmt"
-	"io/ioutil"
 	"log"
-	"sync"
+	"time"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type CacheFile struct {
-	FileName string
-	Content  []byte
+	Id         int64
+	FileName   string
+	Content    []byte
+	CreateTime time.Time
 }
 
 const CACHE_SIZE int32 = 300
 
 type Cache struct {
-	List     [CACHE_SIZE]CacheFile
-	Index    int32
-	JsonFile string
+	Index  int32
+	DBFile string
+	db     *sql.DB
 }
 
 //添加消息
 func (c *Cache) addFile(name string, content []byte) {
-	cur := c.Index % CACHE_SIZE
-	c.List[cur] = CacheFile{FileName: name, Content: content}
-	c.Index = c.Index + 1
-	c.save()
+
+	stmt, err := c.db.Prepare("INSERT INTO build_log_message(file_name, content, create_time) values(?,?,?)")
+	if err != nil {
+		log.Panicln(err)
+		return
+	}
+	_, err = stmt.Exec(name, content, time.Now())
+	if err != nil {
+		log.Panicln(err)
+		return
+	}
 }
 
 //获取消息
@@ -35,54 +44,42 @@ func (c *Cache) getFiles(size int32) ([]CacheFile, error) {
 	if size <= 0 {
 		return nil, errors.New("size must > 0")
 	}
-	if size > CACHE_SIZE {
-		return nil, fmt.Errorf("size must < %v", CACHE_SIZE)
+	rows, err := c.db.Query("SELECT id , file_name , content , create_time FROM build_log_message order by id limit ?", size)
+	if err != nil {
+		log.Println(err)
+		return nil, err
 	}
-
-	cur := c.Index % CACHE_SIZE
-	list := c.List[:cur]
-
-	if c.Index > CACHE_SIZE {
-		app := c.List[cur:]
-		list = append(app, list...)
+	defer rows.Close()
+	var list []CacheFile
+	for rows.Next() {
+		var cacheFile CacheFile
+		err = rows.Scan(&cacheFile.Id, &cacheFile.FileName, &cacheFile.Content, &cacheFile.CreateTime)
+		if err != nil {
+			return nil, err
+		}
+		list = append(list, cacheFile)
 	}
-	first := len(list) - int(size)
-	if first < 0 {
-		first = 0
-	}
-	return list[first:], nil
+	return list, nil
 }
 
-//初始化，从jons文件中加载消息
+//初始化 DB/Table
 func (c *Cache) init() error {
-	jsonData, err := ioutil.ReadFile(c.JsonFile)
-	if err != nil {
-		return nil
-	}
-	var tmp Cache
-	err = json.Unmarshal(jsonData, &tmp)
-	if err != nil {
-		return nil
-	}
-	c.Index = tmp.Index
-	c.List = tmp.List
-	return nil
-}
-
-var sysLock sync.Mutex
-
-// 将信息写到文件
-func (c *Cache) save() error {
-	jsonData, err := json.Marshal(c)
+	db, err := sql.Open("sqlite3", c.DBFile)
 	if err != nil {
 		return err
 	}
-	sysLock.Lock()
-	err = ioutil.WriteFile(c.JsonFile, jsonData, 0600)
-	sysLock.Unlock()
+	c.db = db
+	table := `
+    CREATE TABLE IF NOT EXISTS build_log_message (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        file_name VARCHAR(128) NULL,
+		content VARCHAR(10240) NULL,
+        create_time DATE NULL
+    );
+    `
+	_, err = db.Exec(table)
 	if err != nil {
-		log.Println("write file error", c.JsonFile, err)
+		return err
 	}
-
 	return nil
 }

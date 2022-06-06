@@ -7,5 +7,6 @@ require (
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 // indirect
 	github.com/gomarkdown/markdown v0.0.0-20220527210340-c82b80a9daf2 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
+	github.com/mattn/go-sqlite3 v1.14.13 // indirect
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6 // indirect
 )
