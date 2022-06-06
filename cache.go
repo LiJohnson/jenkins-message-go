@@ -79,7 +79,7 @@ func (c *Cache) getFiles(size int32) ([]CacheFile, error) {
 	if size <= 0 {
 		return nil, errors.New("size must > 0")
 	}
-	rows, err := c.db.Query("SELECT id , file_name , content , create_time FROM build_log_message order by id limit ?", size)
+	rows, err := c.db.Query("SELECT id , file_name , content , create_time FROM build_log_message order by id desc limit ?", size)
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -92,7 +92,7 @@ func (c *Cache) getFiles(size int32) ([]CacheFile, error) {
 		if err != nil {
 			return nil, err
 		}
-		list = append(list, cacheFile)
+		list = append([]CacheFile{cacheFile}, list...)
 	}
 	return list, nil
 }
