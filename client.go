@@ -6,6 +6,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -84,7 +85,8 @@ func (c *Client) readPump() {
 				if err != nil {
 					return
 				}
-				w.Write(msg.Content)
+				idhtml := fmt.Sprintf("<span data-message-id=%v style='display:none'></span>", msg.Id)
+				w.Write(append([]byte(idhtml), msg.Content...))
 
 				n := len(c.send)
 				for i := 0; i < n; i++ {

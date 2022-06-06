@@ -65,6 +65,7 @@ func main() {
 	go hub.run()
 	http.HandleFunc("/", serveHome)
 	http.HandleFunc("/sendMessage", sendMessage(hub))
+	http.HandleFunc("/deleteMessage", deleteMessage)
 	http.HandleFunc("/uploadMedia", uploadMedia)
 
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {

@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"time"
 
@@ -25,18 +26,46 @@ type Cache struct {
 }
 
 //添加消息
-func (c *Cache) addFile(name string, content []byte) {
-
+func (c *Cache) addFile(name string, content []byte) int64 {
 	stmt, err := c.db.Prepare("INSERT INTO build_log_message(file_name, content, create_time) values(?,?,?)")
 	if err != nil {
-		log.Panicln(err)
-		return
+		log.Println(err)
+		return 0
 	}
-	_, err = stmt.Exec(name, content, time.Now())
+	res, err := stmt.Exec(name, content, time.Now())
 	if err != nil {
-		log.Panicln(err)
-		return
+		log.Println(err)
+		return 0
 	}
+	id, err := res.LastInsertId()
+	if err != nil {
+		log.Println(err)
+		return 0
+	}
+	return id
+}
+
+//删除消息
+func (c *Cache) delFile(ids []int64) (int64, error) {
+	if len(ids) == 0 {
+		return 0, fmt.Errorf("ids not empty")
+	}
+	var count int64
+	for id := range ids {
+		res, err := c.db.Exec("DELETE FROM build_log_message WHERE id = ?", id)
+		if err != nil {
+			log.Println(err)
+			return 0, err
+		}
+		affect, err := res.RowsAffected()
+		if err != nil {
+			log.Println(err)
+			return 0, err
+		}
+		count = count + affect
+	}
+
+	return count, nil
 }
 
 //获取消息

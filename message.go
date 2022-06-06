@@ -41,10 +41,12 @@ func sendMessage(hub *Hub) func(http.ResponseWriter, *http.Request) {
 		if len(byteContent) > 1024*10 {
 			byteContent = byteContent[:1024*10]
 		}
-
 		byteContent = markdown.ToHTML(byteContent, nil, nil)
-		hub.broadcast <- byteContent
-		messageCache.addFile("fileName", byteContent)
+		id := messageCache.addFile("fileName", byteContent)
+
+		idhtml := fmt.Sprintf("<span data-message-id=%v style='display:none'></span>", id)
+		hub.broadcast <- append([]byte(idhtml), byteContent...)
+
 	}
 }
 
@@ -78,4 +80,16 @@ func logFile(w http.ResponseWriter, r *http.Request) error {
 	}
 	http.ServeFile(w, r, fileName)
 	return nil
+}
+
+// 返回日志文件
+func deleteMessage(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	var ids []int64
+	json.NewDecoder(r.Body).Decode(&ids)
+	res, _ := messageCache.delFile(ids)
+	w.Write([]byte(fmt.Sprint(res)))
 }
