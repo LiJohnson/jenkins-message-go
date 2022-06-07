@@ -60,13 +60,14 @@ func main() {
 		return
 	}
 
-	messageCache.JsonFile = fmt.Sprintf("%v/cache.db.json", *logPath)
+	messageCache.DBFile = fmt.Sprintf("%v/cache.db", *logPath)
 
 	hub := newHub()
 	go hub.run()
 	go hub.statusLog()
 	http.HandleFunc("/", serveHome)
 	http.HandleFunc("/sendMessage", sendMessage(hub))
+	http.HandleFunc("/deleteMessage", deleteMessage)
 	http.HandleFunc("/uploadMedia", uploadMedia)
 
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
